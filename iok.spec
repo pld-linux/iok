@@ -38,6 +38,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %find_lang %{name}
 
+%clean
+rm -rf $RPM_BUILD_ROOT
+
 %files -f %{name}.lang
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README
@@ -45,7 +48,3 @@ rm -rf $RPM_BUILD_ROOT
 %{_desktopdir}/iok.desktop
 %{_pixmapsdir}/iok.xpm
 %{_mandir}/man1/iok.1*
-
-
-%clean
-rm -rf $RPM_BUILD_ROOT
