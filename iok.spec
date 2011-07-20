@@ -7,7 +7,7 @@ Group:		Applications/System
 URL:		http://iok.sourceforge.net
 Source0:	https://fedorahosted.org/releases/i/o/iok/%{name}-%{version}.tar.gz
 # Source0-md5:	872c12f7c08764ae978efa3fa234f7e9
-Patch0:		%{name}-1.3.12-fix-non-standard-keymap-path.patch
+Patch0:		%{name}-fix-non-standard-keymap-path.patch
 BuildRequires:	gettext
 BuildRequires:	gtk+2-devel
 BuildRequires:	intltool
@@ -40,9 +40,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}.lang
 %defattr(644,root,root,755)
-%doc COPYING AUTHORS ChangeLog README
+%doc AUTHORS ChangeLog NEWS README
 %attr(755,root,root) %{_bindir}/iok
-%{_desktopdir}/fedora-iok.desktop
+%{_desktopdir}/iok.desktop
 %{_pixmapsdir}/iok.xpm
 %{_mandir}/man1/iok.1*
 
