@@ -1,18 +1,19 @@
 Summary:	Indic Onscreen Virtual Keyboard
+Summary(pl.UTF-8):	Indyjska klawiatura wirtualna na ekranie
 Name:		iok
-Version:	1.3.12
+Version:	2.1.3
 Release:	1
 License:	GPL v2+
-Group:		Applications/System
-URL:		http://iok.sourceforge.net
+Group:		X11/Applications
 Source0:	https://fedorahosted.org/releases/i/o/iok/%{name}-%{version}.tar.gz
-# Source0-md5:	872c12f7c08764ae978efa3fa234f7e9
-Patch0:		%{name}-fix-non-standard-keymap-path.patch
-BuildRequires:	gettext
-BuildRequires:	gtk+2-devel
-BuildRequires:	intltool
-BuildRequires:	libxml2-devel
-BuildRequires:	libunique-devel
+# Source0-md5:	88ed68410e1b8c218cc576bf5b81b1a1
+URL:		http://iok.sourceforge.net/
+BuildRequires:	gettext-devel
+BuildRequires:	gtk+3-devel >= 3.0.0
+BuildRequires:	intltool >= 0.35.0
+BuildRequires:	libxml2-devel >= 2.4.0
+BuildRequires:	libunique3-devel >= 3.0
+BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXtst-devel
 Requires:	xkeyboard-config
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -23,9 +24,14 @@ functionality. It currently works with Inscript and xkb keymaps for
 Indian languages. iok can even try to parse non-inscript keymaps and
 show them in iok.
 
+%description -l pl.UTF-8
+iok (Indic Onscreen Keyboard) to indyjska klawiatura na ekranie.
+Zapewnia funkcjonalność wirtualnej klawiatury. Obecnie działa z mapami
+klawiszy Inscript i xkb dla języków indyjskich. Potrafi nawet próbować
+analizować mapy klawiszy inne niż inscript i wyświetlać je w ioku.
+
 %prep
 %setup -q
-%patch0 -p0
 
 %build
 %configure
@@ -46,5 +52,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS ChangeLog NEWS README
 %attr(755,root,root) %{_bindir}/iok
 %{_desktopdir}/iok.desktop
-%{_pixmapsdir}/iok.xpm
+%{_iconsdir}/hicolor/*/apps/iok.png
+%{_iconsdir}/hicolor/scalable/apps/iok.svg
 %{_mandir}/man1/iok.1*
