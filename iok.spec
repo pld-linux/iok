@@ -2,7 +2,7 @@ Summary:	Indic Onscreen Virtual Keyboard
 Summary(pl.UTF-8):	Indyjska klawiatura wirtualna na ekranie
 Name:		iok
 Version:	2.1.3
-Release:	2
+Release:	3
 License:	GPL v2+
 Group:		X11/Applications
 Source0:	https://fedorahosted.org/releases/i/o/iok/%{name}-%{version}.tar.gz
