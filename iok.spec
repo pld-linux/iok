@@ -8,7 +8,7 @@ Group:		X11/Applications
 Source0:	https://fedorahosted.org/releases/i/o/iok/%{name}-%{version}.tar.gz
 # Source0-md5:	88ed68410e1b8c218cc576bf5b81b1a1
 URL:		http://iok.sourceforge.net/
-BuildRequires:	gettext-devel
+BuildRequires:	gettext-tools
 BuildRequires:	gtk+3-devel >= 3.0.0
 BuildRequires:	intltool >= 0.35.0
 BuildRequires:	libxml2-devel >= 2.4.0
