@@ -2,7 +2,7 @@ Summary:	Indic Onscreen Virtual Keyboard
 Summary(pl.UTF-8):	Indyjska klawiatura wirtualna na ekranie
 Name:		iok
 Version:	2.1.3
-Release:	3
+Release:	4
 License:	GPL v2+
 Group:		X11/Applications
 Source0:	https://fedorahosted.org/releases/i/o/iok/%{name}-%{version}.tar.gz
@@ -41,9 +41,6 @@ analizować mapy klawiszy inne niż inscript i wyświetlać je w ioku.
 rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-# remove locales we don't have in glibc
-%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/locale/{bho,brx,doi,mni,sat}
 
 %find_lang %{name}
 
