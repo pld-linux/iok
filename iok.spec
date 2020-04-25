@@ -5,6 +5,7 @@ Version:	2.1.3
 Release:	4
 License:	GPL v2+
 Group:		X11/Applications
+#Source0Dowload: https://pagure.io/iok/releases
 Source0:	https://fedorahosted.org/releases/i/o/iok/%{name}-%{version}.tar.gz
 # Source0-md5:	88ed68410e1b8c218cc576bf5b81b1a1
 URL:		http://iok.sourceforge.net/
