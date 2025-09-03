@@ -6,9 +6,9 @@ Release:	6
 License:	GPL v2+
 Group:		X11/Applications
 #Source0Dowload: https://pagure.io/iok/releases
-Source0:	https://fedorahosted.org/releases/i/o/iok/%{name}-%{version}.tar.gz
+Source0:	https://releases.pagure.org/iok/%{name}-%{version}.tar.gz
 # Source0-md5:	88ed68410e1b8c218cc576bf5b81b1a1
-URL:		http://iok.sourceforge.net/
+URL:		https://iok.sourceforge.net/
 BuildRequires:	gettext-tools
 BuildRequires:	gtk+3-devel >= 3.0.0
 BuildRequires:	intltool >= 0.35.0
@@ -40,6 +40,7 @@ analizować mapy klawiszy inne niż inscript i wyświetlać je w ioku.
 
 %install
 rm -rf $RPM_BUILD_ROOT
+
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
