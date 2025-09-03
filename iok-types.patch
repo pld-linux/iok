@@ -1,0 +1,1617 @@
+--- iok-2.1.3/src/keys.h.orig	2012-07-09 06:38:12.000000000 +0200
++++ iok-2.1.3/src/keys.h	2025-09-03 17:43:47.475767439 +0200
+@@ -40,6 +40,19 @@ void key_event_send_enter(void);
+ void key_event_send_backspace(void);
+ void key_event_send_space(void);
+ void key_event_send_tab(void);
++void key_event_send_escape();
++void key_event_send_f1();
++void key_event_send_f2();
++void key_event_send_f3();
++void key_event_send_f4();
++void key_event_send_f5();
++void key_event_send_f6();
++void key_event_send_f7();
++void key_event_send_f8();
++void key_event_send_f9();
++void key_event_send_f10();
++void key_event_send_f11();
++void key_event_send_f12();
+ int key_event_init(void);
+ 
+ /* Constants may not have been defined if GLib is not included */
+--- iok-2.1.3/src/interface.c.orig	2012-07-09 06:38:12.000000000 +0200
++++ iok-2.1.3/src/interface.c	2025-09-03 18:33:53.101036622 +0200
+@@ -19,6 +19,7 @@
+  *
+  * */
+ 
++#define _MISC_SOURCE
+ #ifdef HAVE_CONFIG_H
+ #  include <config.h>
+ #endif
+@@ -154,10 +155,10 @@ GtkWidget *hbox1;
+ GtkWidget *btn_swap;
+ GtkWidget *btn_cancel_swap;
+ GtkWidget *slabel;
+-wchar_t *tmpkey;
++char *tmpkey; /* UTF-8 */
+ 
+ char *gtxtkeya,*gtxtkeyb,toggle_keymap[80],map_to_read[80];
+-wchar_t *gtxtvaluea,*gtxtvalueb;
++char *gtxtvaluea,*gtxtvalueb; /* UTF-8 */
+ GtkWidget *Reassign_Key;
+ GtkWidget *lbl_rk1;
+ GtkWidget *reakeya_entry;
+@@ -312,7 +313,7 @@ char *key_map[][3]= {
+ typedef struct
+ {
+     char keyname[1];
+-    wchar_t keyvalue[4];
++    char keyvalue[4]; /* UTF-8 */
+ } Mappings;
+ 
+ 
+@@ -387,9 +388,9 @@ void clear_mappings()
+     for (clr=0; clr<94; clr++)
+     {
+         memset(map[clr].keyname,'\0',1);
+-        wmemset(map[clr].keyvalue,'\0',3);
++        memset(map[clr].keyvalue,'\0',3);
+         memset(extmap[clr].keyname,'\0',1);
+-        wmemset(extmap[clr].keyvalue,'\0',3);
++        memset(extmap[clr].keyvalue,'\0',3);
+     }
+ 
+     for (clr=0; clr<50; clr++)
+@@ -3716,13 +3717,13 @@ on_bt_back_quote_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -3750,14 +3751,14 @@ on_bt_back_quote_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -3856,13 +3857,13 @@ on_bt_1_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -3890,14 +3891,14 @@ on_bt_1_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -4022,13 +4023,13 @@ on_bt_2_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -4056,14 +4057,14 @@ on_bt_2_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -4162,13 +4163,13 @@ on_bt_3_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -4196,14 +4197,14 @@ on_bt_3_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -4302,13 +4303,13 @@ on_bt_4_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -4336,14 +4337,14 @@ on_bt_4_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -4442,13 +4443,13 @@ on_bt_5_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -4476,14 +4477,14 @@ on_bt_5_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -4582,13 +4583,13 @@ on_bt_6_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -4616,14 +4617,14 @@ on_bt_6_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -4722,13 +4723,13 @@ on_bt_7_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -4756,14 +4757,14 @@ on_bt_7_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -4862,13 +4863,13 @@ on_bt_8_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -4896,14 +4897,14 @@ on_bt_8_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -5002,13 +5003,13 @@ on_bt_9_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -5036,14 +5037,14 @@ on_bt_9_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -5142,13 +5143,13 @@ on_bt_0_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -5176,14 +5177,14 @@ on_bt_0_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -5282,13 +5283,13 @@ on_bt_dash_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -5316,14 +5317,14 @@ on_bt_dash_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -5422,13 +5423,13 @@ on_bt_equal_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -5456,14 +5457,14 @@ on_bt_equal_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -5562,13 +5563,13 @@ on_bt_q_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -5596,14 +5597,14 @@ on_bt_q_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -5702,13 +5703,13 @@ on_bt_w_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -5736,14 +5737,14 @@ on_bt_w_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -5842,13 +5843,13 @@ on_bt_e_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -5876,14 +5877,14 @@ on_bt_e_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -5982,13 +5983,13 @@ on_bt_r_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -6016,14 +6017,14 @@ on_bt_r_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -6122,13 +6123,13 @@ on_bt_t_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -6156,14 +6157,14 @@ on_bt_t_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -6262,13 +6263,13 @@ on_bt_y_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -6296,14 +6297,14 @@ on_bt_y_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -6402,13 +6403,13 @@ on_bt_u_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -6436,14 +6437,14 @@ on_bt_u_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -6542,13 +6543,13 @@ on_bt_i_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -6576,14 +6577,14 @@ on_bt_i_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -6682,13 +6683,13 @@ on_bt_o_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -6716,14 +6717,14 @@ on_bt_o_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -6822,13 +6823,13 @@ on_bt_p_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -6856,14 +6857,14 @@ on_bt_p_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -6962,13 +6963,13 @@ on_bt_sq_bra_left_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -6996,14 +6997,14 @@ on_bt_sq_bra_left_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -7102,13 +7103,13 @@ on_bt_sq_bra_right_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -7136,14 +7137,14 @@ on_bt_sq_bra_right_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -7242,13 +7243,13 @@ on_bt_win_slash_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -7276,14 +7277,14 @@ on_bt_win_slash_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -7382,13 +7383,13 @@ on_bt_a_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -7416,14 +7417,14 @@ on_bt_a_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -7522,13 +7523,13 @@ on_bt_s_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -7556,14 +7557,14 @@ on_bt_s_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -7662,13 +7663,13 @@ on_bt_d_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -7696,14 +7697,14 @@ on_bt_d_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -7802,13 +7803,13 @@ on_bt_f_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -7836,14 +7837,14 @@ on_bt_f_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -7942,13 +7943,13 @@ on_bt_g_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -7976,14 +7977,14 @@ on_bt_g_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -8082,13 +8083,13 @@ on_bt_h_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -8116,14 +8117,14 @@ on_bt_h_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -8222,13 +8223,13 @@ on_bt_j_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -8256,14 +8257,14 @@ on_bt_j_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -8362,13 +8363,13 @@ on_bt_k_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -8396,14 +8397,14 @@ on_bt_k_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -8502,13 +8503,13 @@ on_bt_l_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -8536,14 +8537,14 @@ on_bt_l_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -8642,13 +8643,13 @@ on_bt_semi_colon_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -8676,14 +8677,14 @@ on_bt_semi_colon_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -8782,13 +8783,13 @@ on_bt_quote_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -8816,14 +8817,14 @@ on_bt_quote_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -8922,13 +8923,13 @@ on_bt_z_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -8956,14 +8957,14 @@ on_bt_z_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -9062,13 +9063,13 @@ on_bt_x_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -9096,14 +9097,14 @@ on_bt_x_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -9202,13 +9203,13 @@ on_bt_c_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -9236,14 +9237,14 @@ on_bt_c_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -9342,13 +9343,13 @@ on_bt_v_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -9376,14 +9377,14 @@ on_bt_v_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -9482,13 +9483,13 @@ on_bt_b_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -9516,14 +9517,14 @@ on_bt_b_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -9622,13 +9623,13 @@ on_bt_n_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -9656,14 +9657,14 @@ on_bt_n_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -9762,13 +9763,13 @@ on_bt_m_drag_data_get                  (
+                                         guint time,
+                                         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -9796,14 +9797,14 @@ on_bt_m_drag_data_received             (
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -9902,13 +9903,13 @@ on_bt_coma_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -9936,14 +9937,14 @@ on_bt_coma_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -10042,13 +10043,13 @@ on_bt_dot_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -10076,14 +10077,14 @@ on_bt_dot_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
+@@ -10182,13 +10183,13 @@ on_bt_linux_slash_drag_data_get
+         guint time,
+         gpointer         user_data)
+ {
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+ 
+     g_assert (selection_data != NULL);
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+     switch (target_type)
+     {
+     case TARGET_STRING:
+@@ -10216,14 +10217,14 @@ on_bt_linux_slash_drag_data_received
+     gint ii=0,len=0;
+     gchar   *_sdata;
+     GtkButton *swidget;
+-    wchar_t ktxt[3];
++    char ktxt[4];
+     gchar *sbtn;
+     char sbtname[2];
+     gboolean dnd_success = FALSE;
+     gboolean delete_selection_data = FALSE;
+ 
+     sbtn = (gchar *) gtk_button_get_label(GTK_BUTTON(widget));
+-    strcpy(ktxt,sbtn);
++    strlcpy(ktxt,sbtn,4);
+ 
+     len = gtk_selection_data_get_length (selection_data);
+     if ((selection_data != NULL) && (len >= 0))
